@@ -149,10 +149,14 @@ class Parser:
     # NIVEAU 3 : Termes(*, /, %, **)
     def term(self):
         node = self.power()
+        valid_ops = (TokenType.MUL, TokenType.DIV, TokenType.MOD, TokenType.MAT_MUL)
+        implicit_muls = (TokenType.ID, TokenType.LPAREN)
 
-        while self.current_token.type in (TokenType.MUL, TokenType.DIV, TokenType.MOD, TokenType.MAT_MUL):
+        while self.current_token.type in valid_ops or self.current_token.type in implicit_muls:
             token = self.current_token
 
+            if token.type in implicit_muls:
+                node = node * self.power()
             if token.type == TokenType.MUL:
                 self.eat(TokenType.MUL)
                 node = node * self.power()

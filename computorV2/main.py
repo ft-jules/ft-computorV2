@@ -11,6 +11,7 @@ faire une interface pour le projet
 """
 
 import sys
+import readline
 from src.lexer.lexer import Lexer
 from src.lexer.tokens import TokenType
 from src.parser.parser import Parser
@@ -79,6 +80,12 @@ def handle_equation(line, context):
         print(f"Unexpected Error: {e}")
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] in ["--gui", "g"]:
+        from src.gui.window import ComputorGui
+        global_context = Context()
+        app = ComputorGui(global_context)
+        app.run()
+        return
     print("Welcome to ComputorV2!")
     print("Type 'exit' to quit.")
 

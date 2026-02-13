@@ -3,6 +3,10 @@ class Context:
     def __init__(self):
         self.variables = {}
         self.functions = {}
+        self.history = []
+
+    def add_to_history(self, command, result):
+        self.history.append(f"{command} -> {result}")
 
     def set_variable(self, name, value):
         if name == 'i':
