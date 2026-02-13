@@ -31,10 +31,21 @@ class Rational:
         self.numerator = int(numerator // common)
         self.denominator = int(denominator // common)
 
-    def __repr__(self):
+    def __str__(self):
         if self.denominator == 1:
-            return f"{self.numerator}"
+            return str(self.numerator)
+        d = self.denominator
+        while d % 2 == 0:
+            d //=2
+        while d % 5 == 0:
+            d//=5
+        if d == 1:
+            val = self.numerator / self.denominator
+            return f"{val:.6f}".rstrip('0').rstrip('.')
         return f"{self.numerator}/{self.denominator}"
+
+    def __repr__(self):
+        return self.__str__()
 
     def __eq__(self, other):
         if isinstance(other, (int, float)):

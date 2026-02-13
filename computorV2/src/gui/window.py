@@ -9,6 +9,8 @@ from src.parser.parser import Parser
 class ComputorGui:
     def __init__(self, context):
         self.ctx = context
+        self.cmd_history = []
+        self.history_index = 0
         self.root = tk.Tk()
         self.root.title("ComputorV2 - Interactive Console")
         self.root.geometry("700x500")
@@ -34,6 +36,8 @@ class ComputorGui:
         
         self.root.after(100, self.input_entry.focus)
         self.input_entry.bind("<Return>", self.process_input)
+        self.input_entry.bind("<Up>", self.history_up)
+        self.input_entry.bind("<Down>", self.history_down)
 
         self.output_area = scrolledtext.ScrolledText(
             self.root,
@@ -60,13 +64,55 @@ class ComputorGui:
         self.output_area.see(tk.END)
         self.output_area.config(state=tk.DISABLED)
 
+    def history_up(self, event):
+        if not self.cmd_history:
+            return
+        if self.history_index > 0:
+            self.history_index -= 1
+            self.input_entry.delete(0, tk.END)
+            self.input_entry.insert(0, self.cmd_history[self.history_index])
+    
+    def history_down(self, event):
+        if not self.cmd_history:
+            return
+        if self.history_index < len(self.cmd_history) - 1:
+            self.history_index += 1
+            self.input_entry.delete(0, tk.END)
+            self.input_entry.insert(0, self.cmd_history[self.history_index])
+        elif self.history_index == len(self.cmd_history) - 1:
+            self.history_index += 1
+            self.input_entry.delete(0, tk.END)
+
     def process_input(self, event=None):
         text = self.input_entry.get().strip()
         if not text:
             return
 
+        if not self.cmd_history or self.cmd_history[-1] != text:
+            self.cmd_history.append(text)
+        self.history_index = len(self.cmd_history)
+
         if text.lower() in ['exit', 'quit']:
             self.root.destroy()
+            return
+
+        if text.lower() == 'history':
+            self.input_entry.delete(0, th.END)
+            self.print_to_output(text, is_input=True)
+            if not self.ctx.history:
+                self.print_to_output("History is empty.")
+            else:
+                self.print_to_output("\n".join(self.ctx.history))
+            return
+
+        if text.lower() == 'vars':
+            self.input_entry.delete(0, tk.END)
+            self.print_to_output(text, is_input=True)
+            if not self.ctx.variables:
+                self.print_to_output("No variables stored.")
+            else:
+                vars_str = "\n".join([f"{name} = {val}" for name, val in self.ctx.variables.items()])
+                self.print_to_output(vars_str)
             return
 
         self.input_entry.delete(0, tk.END)

@@ -1,13 +1,9 @@
 """
 Point d'entrée du programme. Lance le shell interactif.
-"""
-
-"""
+dd
 BONUS:
 division par des fractions avec la sous couche de rationels Expression
 pas avec methode float sale car (2^1/2)^2 = 1.99999999
-
-faire une interface pour le projet
 """
 
 import sys
@@ -98,6 +94,20 @@ def main():
                 continue
             if text.lower() in ["exit", "quit"]:
                 break
+            if text.lower() == "history":
+                if not global_context.history:
+                    print("History is empty.")
+                else:
+                    print("\n".join(global_context.history))
+                continue
+
+            if text.lower() == "vars":
+                if not global_context.variables:
+                    print("No variables stored.")
+                else:
+                    for name in global_context.variables.items():
+                        print(f"{name} = {val}")
+                continue
             if '?' in text:
                 hanlde_equation(text, global_context)
             else:

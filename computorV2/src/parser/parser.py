@@ -78,6 +78,14 @@ class Parser:
     def factor(self):
         token = self.current_token
 
+        if token.type == TokenType.MINUS:
+            self.eat(TokenType.MINUS)
+            return self.factor() * Rational(-1)
+        
+        elif token.type== TokenType.PLUS:
+            self.eat(TokenType.PLUS)
+            return self.factor()
+        
         if token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
             return Rational(token.value)
