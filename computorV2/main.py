@@ -80,7 +80,7 @@ def handle_equation(line, context):
         print(f"Unexpected Error: {e}")
 
 def main():
-    if len(sys.argv) > 1 and sys.argv[1] in ["--gui", "g"]:
+    if len(sys.argv) > 1 and sys.argv[1] in ["--gui", "-g"]:
         from src.gui.window import ComputorGui
         global_context = Context()
         app = ComputorGui(global_context)
