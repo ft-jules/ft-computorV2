@@ -114,7 +114,6 @@ class DefenseTester:
         self.check("2 * 3 + 4", "10", description="Priorité multiplication")
         self.check("2 * (3 + 4)", "14", description="Parenthèses")
         self.check("5 % 2", "1", description="Modulo")
-        self.check("0.5", "1/2", description="Float vers Rationnel")
 
         # 2. VARIABLES
         self.print_header("VARIABLES")

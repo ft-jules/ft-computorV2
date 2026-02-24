@@ -8,14 +8,16 @@ from src.utils.errors import ParseError
 from src.core.rational import Rational
 from src.core.complex import Complex
 from src.core.matrix import Matrix
+from src.core.polynomial import Polynomial
 from src.core.context import Context
 from src.core.function import Function
 
 class Parser:
-    def __init__(self, lexer, context=None):
+    def __init__(self, lexer, context=None, is_solving=False):
         self.lexer = lexer
         self.context = context if context else Context()
         self.current_token = self.lexer.get_next_token()
+        self.is_solving = is_solving
 
     def eat(self, token_type): #compare avec type attendu, avance ou error
         if self.current_token.type == token_type:
@@ -104,20 +106,24 @@ class Parser:
             return self.matrix()
 
         if token.type == TokenType.ID:
-            name = token.value
+            name = token.value.lower()
             if self.lexer.peek_token(1).type == TokenType.LPAREN:
                 self.eat(TokenType.ID)
                 self.eat(TokenType.LPAREN)
                 arg_value = self.expr()
                 self.eat(TokenType.RPAREN)
-
                 fun_obj = self.context.get_function(name)
                 if not fun_obj:
                     raise ParseError(f"Unknown function '{name}'")
                 return self.resolve_function_call(fun_obj, arg_value)
             self.eat(TokenType.ID)
-            return self.context.get_variable(name)
-        raise ParseError(f"Unexpected token: {token}")
+            var_val = self.context.get_variable_safe(name)
+            if var_val is not None:
+                return var_val
+            if self.is_solving:
+                return Polynomial({1: Complex(1)}, var_name=name)
+                
+            raise ParseError(f"Unknown variable '{name}'")
 
     # GESTION DES MATRICES
     def matrix(self):
@@ -165,7 +171,7 @@ class Parser:
 
             if token.type in implicit_muls:
                 node = node * self.power()
-            if token.type == TokenType.MUL:
+            elif token.type == TokenType.MUL:
                 self.eat(TokenType.MUL)
                 node = node * self.power()
             elif token.type == TokenType.DIV:

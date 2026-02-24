@@ -62,8 +62,8 @@ def handle_equation(line, context):
             equation_ctx.set_variable(unknown_name, X)
         else:
             pass
-        left_val = Parser(Lexer(left_str), equation_ctx).parse()
-        right_val = Parser(Lexer(right_str), equation_ctx).parse()
+        left_val = Parser(Lexer(left_str), equation_ctx, is_solving=True).parse()
+        right_val = Parser(Lexer(right_str), equation_ctx, is_solving=True).parse()
         final_poly = left_val - right_val
 
         if not isinstance(final_poly, Polynomial):
@@ -94,6 +94,7 @@ def main():
                 continue
             if text.lower() in ["exit", "quit"]:
                 break
+            
             if text.lower() == "history":
                 if not global_context.history:
                     print("History is empty.")
@@ -105,21 +106,38 @@ def main():
                 if not global_context.variables:
                     print("No variables stored.")
                 else:
-                    for name in global_context.variables.items():
+                    for name, val in global_context.variables.items():
                         print(f"{name} = {val}")
                 continue
+            
+            needs_solving = ('=' in text) or ('?' in text)
             if '?' in text:
-                hanlde_equation(text, global_context)
+                clean_text = text.replace('?', '').strip()
+                if clean_text.endswith('='):
+                    expr_to_eval = clean_text[:-1].strip()
+                    lexer = Lexer(expr_to_eval)
+                    parser = Parser(lexer, global_context, is_solving=True)
+                    result = parser.parse()
+                    if result is not None:
+                        print(result)
+                        global_context.add_to_history(text, str(result))
+                else:
+                    handle_equation(text, global_context)
+                    global_context.add_to_history(text, "Equation solved")
             else:
                 lexer = Lexer(text)
-                parser = Parser(lexer, global_context)
+                parser = Parser(lexer, global_context, is_solving=needs_solving)
                 result = parser.parse()
                 if result is not None:
                     print(result)
+                    global_context.add_to_history(text, str(result))
+                else:
+                    global_context.add_to_history(text, "Assigned")
+
         except (MathError, ParseError) as e:
             print(f"Error: {e}")
         except KeyboardInterrupt:
-            print("\Goodbye!")
+            print("\nGoodbye!")
             sys.exit(0)
         except Exception as e:
             print(f"Error: {e}")

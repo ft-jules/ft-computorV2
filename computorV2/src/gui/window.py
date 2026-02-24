@@ -56,10 +56,10 @@ class ComputorGui:
         self.output_area.config(state=tk.NORMAL)
         if is_input:
             self.output_area.insert(tk.END, f"> {text}\n", "input")
-            self.output_area.tag_config("input", foreground="#569cd6") # Bleu pour l'input
+            self.output_area.tag_config("input", foreground="#569cd6")
         else:
             self.output_area.insert(tk.END, f"{text}\n\n", "output")
-            self.output_area.tag_config("output", foreground="#ce9178") # Orange pour le résultat
+            self.output_area.tag_config("output", foreground="#ce9178")
         
         self.output_area.see(tk.END)
         self.output_area.config(state=tk.DISABLED)
@@ -97,7 +97,7 @@ class ComputorGui:
             return
 
         if text.lower() == 'history':
-            self.input_entry.delete(0, th.END)
+            self.input_entry.delete(0, tk.END)
             self.print_to_output(text, is_input=True)
             if not self.ctx.history:
                 self.print_to_output("History is empty.")
@@ -118,7 +118,6 @@ class ComputorGui:
         self.input_entry.delete(0, tk.END)
         self.print_to_output(text, is_input=True)
 
-        # Redirection de print vers interface
         capture = io.StringIO()
         old_stdout = sys.stdout
         sys.stdout = capture
@@ -126,14 +125,31 @@ class ComputorGui:
         try:
             import main 
 
+            needs_solving = ('=' in text) or ('?' in text)
             if '?' in text:
-                main.handle_equation(text, self.ctx)
+                clean_text = text.replace('?', '').strip()
+                if clean_text.endswith('='):
+                    # MODE EVALUATION: A(B(x)) = ?
+                    expr_to_eval = clean_text[:-1].strip()
+                    lexer = Lexer(expr_to_eval)
+                    parser = Parser(lexer, self.ctx, is_solving=True)
+                    result = parser.parse()
+                    if result is not None:
+                        print(result)
+                        self.ctx.add_to_history(text, str(result))
+                else:
+                    main.handle_equation(text, self.ctx)
+                    self.ctx.add_to_history(text, "Equation solved")
             else:
                 lexer = Lexer(text)
-                parser = Parser(lexer, self.ctx)
+                parser = Parser(lexer, self.ctx, is_solving=needs_solving)
                 result = parser.parse()
                 if result is not None:
                     print(result)
+                    self.ctx.add_to_history(text, str(result))
+                else:
+                    self.ctx.add_to_history(text, "Assigned")
+
         except Exception as e:
             print(f"Error: {e}")
         finally:
