@@ -1,22 +1,21 @@
-Computor V1 : "I'm not a graduate either"
+Computor V1: "I'm not a graduate either"
+This initial project involves developing a streamlined polynomial equation solver.
 
-Ce premier projet consiste à coder un programme simple de résolution d'équations polynomiales.
+Solving Capabilities: The program is designed to solve polynomial equations up to the second degree.
 
--Capacité de résolution : Le programme est capable de résoudre des équations polynomiales jusqu'au second degré.
+Equation Analysis: It strictly requires displaying the reduced form of the equation alongside its polynomial degree.
 
--Analyse de l'équation : Il doit obligatoirement afficher la forme réduite de l'équation ainsi que son degré polynomial.
-
--Résultats : Il calcule les solutions et affiche le signe du discriminant lorsque cela s'applique.
+Results: It computes the solutions and indicates the sign of the discriminant where applicable.
 
 
-Computor V2 : "Your homemade basic calculator"
 
-Ce second projet pousse le concept beaucoup plus loin en demandant la création d'un interpréteur de commandes interactif complet pour réaliser des calculs avancés.
+Computor V2: "Your homemade basic calculator"
+This second project takes the concept significantly further, requiring the creation of a fully interactive command-line interpreter designed for advanced mathematical computations.
 
--Types mathématiques supportés : Le moteur gère nativement les nombres rationnels, les nombres complexes, les matrices et les fonctions à une variable.
+Supported Mathematical Types: The engine natively handles rational numbers, complex numbers, matrices, and single-variable functions.
 
--Gestion de la mémoire : Le programme permet l'assignation et la réassignation de variables de différents types grâce à l'inférence de type.
+Memory Management: The program allows for the assignment and reassignment of variables of various types by utilizing type inference.
 
--Opérations avancées : Il prend en charge les opérations arithmétiques classiques (+, -, *, /), le modulo (%), les puissances entières (^), ainsi que la multiplication matricielle (**).
+Advanced Operations: It supports standard arithmetic operations (+, -, *, /), modulo (%), integer exponentiation (^), as well as matrix multiplication (**).
 
--Mode Résolution : En utilisant l'opérateur ? à la fin d'une saisie, l'interpréteur peut évaluer des expressions complexes et résoudre des équations polynomiales jusqu'au degré 2.
+Resolution Mode: By appending the ? operator to the end of an input, the interpreter can evaluate complex expressions and solve polynomial equations up to the second degree.
