@@ -1,21 +1,69 @@
-Computor V1: "I'm not a graduate either"
-This initial project involves developing a streamlined polynomial equation solver.
+# computorV2
 
-Solving Capabilities: The program is designed to solve polynomial equations up to the second degree.
+Interpréteur de calcul en ligne de commande, en Python. Rationnels, complexes,
+matrices et fonctions à une variable.
 
-Equation Analysis: It strictly requires displaying the reduced form of the equation alongside its polynomial degree.
+## Utilisation
 
-Results: It computes the solutions and indicates the sign of the discriminant where applicable.
+Python 3, aucune dépendance pour le mode console.
 
+```sh
+python3 main.py
+```
 
+```
+> x = 2
+2
+> y = 4 * i
+4i
+> x + y = ?
+2 + 4i
+> m = [[1,2];[3,4]]
+[[1, 2]; [3, 4]]
+> f(z) = z^2 + 3
+Function f(z)
+> f(2) = ?
+7
+> x^2 + 5x = 10 ?
+Reduced form: x^2 + 5x - 10 = 0
+Polynomial degree: 2
+Discriminant (Delta): 65
+Discriminant is strictly positive, the two solutions are:
+-6.531129
+1.531129
+```
 
-Computor V2: "Your homemade basic calculator"
-This second project takes the concept significantly further, requiring the creation of a fully interactive command-line interpreter designed for advanced mathematical computations.
+`vars` liste les variables stockées, `history` les entrées précédentes, `exit`
+ou `quit` sort. Les noms de variables ne sont pas sensibles à la casse : `a` et
+`A` sont la même.
 
-Supported Mathematical Types: The engine natively handles rational numbers, complex numbers, matrices, and single-variable functions.
+Interface graphique (bonus) : `python3 main.py --gui`.
 
-Memory Management: The program allows for the assignment and reassignment of variables of various types by utilizing type inference.
+## Ce qui est géré
 
-Advanced Operations: It supports standard arithmetic operations (+, -, *, /), modulo (%), integer exponentiation (^), as well as matrix multiplication (**).
+- types : rationnels, complexes (`i`), matrices `[[1,2];[3,4]]`, fonctions `f(x) = ...`
+- opérateurs : `+ - * /`, modulo `%`, puissance entière `^`, produit matriciel `**`
+- affectation et réaffectation, le type est inféré
+- `?` en fin de ligne : évalue une expression (`x + y = ?`) ou résout une
+  équation polynomiale jusqu'au degré 2
+- division par une fraction passe par la couche rationnelle, pas par des floats,
+  pour éviter les `(2^1/2)^2 = 1.9999999`
 
-Resolution Mode: By appending the ? operator to the end of an input, the interpreter can evaluate complex expressions and solve polynomial equations up to the second degree.
+## Fichiers
+
+```
+main.py              shell interactif, point d'entrée
+src/lexer/           tokenisation
+src/parser/          analyse syntaxique
+src/core/            types (rational, complex, matrix, function, polynomial) et contexte
+src/utils/errors.py  erreurs math et parsing
+src/gui/window.py    interface graphique
+defense_tester.py    batterie de tests pour la soutenance
+setupV2.sh           env conda, optionnel (`./setupV2.sh clean` pour supprimer)
+```
+
+## Tests
+
+```sh
+python3 defense_tester.py
+```

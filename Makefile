@@ -7,7 +7,7 @@ run:
 	python3 main.py
 
 test:
-	python3 -m unittest discover tests
+	python3 defense_tester.py
 
 clean:
 	rm -rf __pycache__
