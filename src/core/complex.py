@@ -109,6 +109,8 @@ class Complex:
         return Complex(other) - self
 
     def __rtruediv__(self, other):
+        if not isinstance(other, (int, float, Rational)):
+            return NotImplemented
         return Complex(other) / self
 
     def sqrt(self):

@@ -143,6 +143,7 @@ class DefenseTester:
         self.check("[[1, 2]] ** [[3]; [4]]", "[[11]]", description="Produit Matriciel")
         self.check("[[1, 2]; [3, 4]] * [[1, 2]; [3, 4]]", "[[1, 4]; [9, 16]]", description="Multiplication terme a terme")
         self.check("[[1, 2]; [3, 4]] ** [[1, 2]; [3, 4]]", "[[7, 10]; [15, 22]]", description="Produit Matriciel carre")
+        self.check("[[2, 4]; [6, 8]] / 2", "[[1, 2]; [3, 4]]", description="Division par un scalaire")
 
         # 6. ÉQUATIONS (Adapté à ton output)
         self.print_header("RÉSOLUTION D'ÉQUATIONS")
@@ -185,6 +186,9 @@ class DefenseTester:
         self.check("unknown + 1", "", mode="error", description="Var inconnue")
         self.check("2 ** 3", "", mode="error", description="** entre deux scalaires")
         self.check("[[1,2]] ** 2", "", mode="error", description="** matrice et scalaire")
+        self.check("[[2,4];[6,8]] / 0", "", mode="error", description="Matrice divisee par zero")
+        self.check("2 / [[2,4];[6,8]]", "", mode="error", description="Scalaire divise par une matrice")
+        self.check("[[2,4];[6,8]] % 2", "", mode="error", description="Modulo sur une matrice")
 
         self.print_summary()
 

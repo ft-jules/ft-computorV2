@@ -126,6 +126,8 @@ class Rational:
         return other - self 
 
     def __rtruediv__(self, other):
-        if isinstance(other, int):
+        if isinstance(other, (int, float)):
             other = Rational(other)
+        if not isinstance(other, Rational):
+            return NotImplemented
         return other / self

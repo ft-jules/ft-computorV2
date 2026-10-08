@@ -117,3 +117,26 @@ class Matrix:
 
     def __rmul__(self, other): # gere le cas nombre * matrice
         return self.__mul__(other)
+
+    def __truediv__(self, other): # matrix / scalar, divides every element
+        from .rational import Rational
+        if isinstance(other, Matrix):
+            raise MathError("Cannot divide by a matrix")
+        if not isinstance(other, (int, float, Complex, Rational)):
+            return NotImplemented
+        new_data = []
+        for i in range(self.rows):
+            new_row = []
+            for j in range(self.cols):
+                new_row.append(self.data[i][j] / other)
+            new_data.append(new_row)
+        return Matrix(new_data)
+
+    def __rtruediv__(self, other):
+        raise MathError("Cannot divide by a matrix")
+
+    def __mod__(self, other):
+        raise MathError("Modulo is not defined for matrices")
+
+    def __rmod__(self, other):
+        raise MathError("Modulo is not defined for matrices")
