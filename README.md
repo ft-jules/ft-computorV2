@@ -19,7 +19,8 @@ python3 main.py
 > x + y = ?
 2 + 4i
 > m = [[1,2];[3,4]]
-[[1, 2]; [3, 4]]
+[ 1 , 2 ]
+[ 3 , 4 ]
 > f(z) = z^2 + 3
 z^2 + 3
 > f(2) = ?
@@ -29,15 +30,16 @@ Reduced form: t^2 + 5t - 10 = 0
 Polynomial degree: 2
 Discriminant (Delta): 65
 Discriminant is strictly positive, the two solutions are:
--6.531129
-1.531129
+-6.531128874
+1.531128874
 ```
 
-`vars` liste les variables stockées, `history` les entrées précédentes, `exit`
-ou `quit` sort. Les noms de variables ne sont pas sensibles à la casse : `a` et
+`vars` liste les variables stockées, `history` les entrées précédentes, `exit`,
+`quit` ou Ctrl-D sort. Les noms de variables ne sont pas sensibles à la casse : `a` et
 `A` sont la même.
 
-Interface graphique (bonus) : `python3 main.py --gui`.
+Interface graphique (bonus) : `python3 main.py --gui`, il faut tkinter
+(`python3-tk` sur Ubuntu).
 
 ## Ce qui est géré
 
@@ -46,6 +48,10 @@ Interface graphique (bonus) : `python3 main.py --gui`.
 - affectation et réaffectation, le type est inféré
 - `?` en fin de ligne : évalue une expression (`x + y = ?`) ou résout une
   équation polynomiale jusqu'au degré 2
+- une fonction est simplifiée à la définition : les variables connues prennent
+  leur valeur et les constantes s'additionnent, `funA(x) = varA + varB * 4 - 1 / 2 + x`
+  donne `238.5 + x`
+- les noms ne contiennent que des lettres, et `i` est réservé
 - multiplication implicite : `2i`, `4x`, `2(x + 1)` forment un bloc, donc `4x / 2x`
   vaut 2
 - `-2^2` vaut -4 et `2^3^2` vaut 512, comme en maths

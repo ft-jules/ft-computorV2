@@ -95,7 +95,7 @@ else
 fi
 
 echo "Installation outils complets..."
-conda run -n "$ENV_NAME" pip install black flake8 mypy pytest numpy
+conda run -n "$ENV_NAME" pip install black flake8 mypy pytest
 
 echo -e "\n${GREEN}=== PRÊT ===${RESET}"
 echo -e "Activer : ${BLUE}conda activate $ENV_NAME${RESET}"
