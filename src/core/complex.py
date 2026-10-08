@@ -4,6 +4,19 @@ Classe Complex : Gère les nombres complexes (partie réelle + imaginaire).
 from .rational import Rational
 from src.utils.errors import MathError
 
+def ft_sqrt(number): # Newton's method, taken from ComputorV1
+    if number < 0:
+        raise MathError("Cannot calculate square root of a negative number.")
+    if number == 0:
+        return 0.0
+    # start above the root: from there every step goes down, until floats can't go lower
+    guess = float(number) if number > 1 else 1.0
+    while True:
+        new_guess = 0.5 * (guess + (number / guess))
+        if new_guess >= guess:
+            return guess
+        guess = new_guess
+
 class Complex:
     def __init__(self, real, imaginary=0):
         if not isinstance(real, Rational):
@@ -113,16 +126,17 @@ class Complex:
             return NotImplemented
         return Complex(other) / self
 
-    def sqrt(self):
-        if self.imaginary.numerator == 0 and self.real.numerator >= 0:
-            val = self.real.numerator / self.real.denominator
-            root = val ** 0.5
-            return Complex(root, 0)
-        if self.imaginary.numerator == 0 and self.real.numerator < 0:
-            val = abs(self.real.numerator / self.real.denominator)
-            root = val ** 0.5
-            return Complex(0, root)
-        c_val = complex(self.real.numerator/self.real.denominator, 
-                        self.imaginary.numerator/self.imaginary.denominator)
-        res = c_val ** 0.5
-        return Complex(res.real, res.imag)
+    def sqrt(self): # principal root, without Python's complex type
+        a = self.real.numerator / self.real.denominator
+        b = self.imaginary.numerator / self.imaginary.denominator
+        if b == 0:
+            if a >= 0:
+                return Complex(ft_sqrt(a), 0)
+            return Complex(0, ft_sqrt(-a))
+        # for a + bi with modulus r: re = sqrt((r + a) / 2), im = sqrt((r - a) / 2) with the sign of b
+        r = ft_sqrt(a * a + b * b)
+        re = ft_sqrt((r + a) / 2)
+        im = ft_sqrt((r - a) / 2)
+        if b < 0:
+            im = -im
+        return Complex(re, im)

@@ -187,6 +187,10 @@ class DefenseTester:
                    ["degree: 2", "strictly positive", "2", "-2"],
                    mode="solve", description="Moins unaire dans une equation")
 
+        self.check("x^2 + i = 0 ?",
+                   ["degree: 2", "0.707107"],
+                   mode="solve", description="Discriminant complexe")
+
         # 7. ERREURS
         self.print_header("GESTION D'ERREURS")
         self.check("1 / 0", "", mode="error", description="Division par zéro")
