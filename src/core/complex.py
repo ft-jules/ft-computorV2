@@ -92,6 +92,20 @@ class Complex:
         num_imag = (self.imaginary * other.real) - (self.real * other.imaginary) # '-' a cause du conjuge
         return Complex(num_real / denominator, num_imag / denominator)
 
+    def __mod__(self, other): # modulo only makes sense between real numbers
+        if isinstance(other, (int, float, Rational)):
+            other = Complex(other)
+        if not isinstance(other, Complex):
+            return NotImplemented
+        if self.imaginary.numerator != 0 or other.imaginary.numerator != 0:
+            raise MathError("Modulo is only defined for real numbers")
+        return Complex(self.real % other.real)
+
+    def __rmod__(self, other):
+        if not isinstance(other, (int, float, Rational)):
+            return NotImplemented
+        return Complex(other) % self
+
     def __pow__(self, power):
         from .rational import Rational
         if isinstance(power, Rational):

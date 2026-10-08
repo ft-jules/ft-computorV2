@@ -142,6 +142,12 @@ class DefenseTester:
         self.check("g(3)", "10", description="Appel fonction imbriquée")
         self.check("funA(x) = 2*x^5 + 4x^2 - 5*x + 4", "2 * x^5 + 4 * x^2 - 5 * x + 4", description="Affichage du corps (sujet)")
         self.check("funB(y) = 43 * y / (4 % 2 * y)", "43 * y / (4 % 2 * y)", description="Corps accepte meme si division par zero")
+        self.check("varA = 27", "27", description="Variable pour la simplification")
+        self.check("varB = 53", "53", description="Variable pour la simplification")
+        self.check("funA(x) = varA + varB * 4 - 1 / 2 + x", "238.5 + x", description="Simplification (sujet V.2)")
+        self.check("funB(x) = 4 -5 + (x + 2)^2 - 4", "(x + 2)^2 - 5", description="Simplification (sujet V.3)")
+        self.check("funC(x) = 4x + 5 - 2", "4 * x + 3", description="Simplification (sujet V.3)")
+        self.check("funA(b) = 2*b+b", "2 * b + b", description="Corps garde tel quel (sujet V.4.3)")
 
         # 5. MATRICES (Nécessite le fix dans matrix.py)
         self.print_header("MATRICES")
@@ -152,6 +158,7 @@ class DefenseTester:
         self.check("[[1, 2]; [3, 4]] * [[1, 2]; [3, 4]]", "[ 1 , 4 ]\n[ 9 , 16 ]", description="Multiplication terme a terme")
         self.check("[[1, 2]; [3, 4]] ** [[1, 2]; [3, 4]]", "[ 7 , 10 ]\n[ 15 , 22 ]", description="Produit Matriciel carre")
         self.check("[[2, 4]; [6, 8]] / 2", "[ 1 , 2 ]\n[ 3 , 4 ]", description="Division par un scalaire")
+        self.check("[[1, 2]; [3, 4]]^2", "[ 7 , 10 ]\n[ 15 , 22 ]", description="Puissance de matrice")
 
         # 6. ÉQUATIONS (Adapté à ton output)
         self.print_header("RÉSOLUTION D'ÉQUATIONS")
@@ -215,6 +222,9 @@ class DefenseTester:
         self.check("varone1 = 3", "", mode="error", description="Chiffre dans un nom")
         self.check("my_var = 3", "", mode="error", description="Underscore dans un nom")
         self.check("i = 2", "", mode="error", description="i ne peut pas etre une variable")
+        self.check("2 + [[1,2]]", "", mode="error", description="Scalaire plus matrice")
+        self.check("i % 2", "", mode="error", description="Modulo sur un complexe")
+        self.check("[[1,2]]^2", "", mode="error", description="Puissance d'une matrice non carree")
 
         self.print_summary()
 

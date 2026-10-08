@@ -145,3 +145,20 @@ class Matrix:
 
     def __rmod__(self, other):
         raise MathError("Modulo is not defined for matrices")
+
+    def __radd__(self, other):
+        raise MathError("Cannot add matrix and Scalar")
+
+    def __rsub__(self, other):
+        raise MathError("Cannot substract Matrix and Scalar")
+
+    def __pow__(self, power): # A^n is the matrix product repeated n times, so A must be square
+        from .rational import Rational
+        if not isinstance(power, Rational) or power.denominator != 1 or power.numerator < 0:
+            raise MathError("A matrix can only be raised to a positive integer power")
+        if self.rows != self.cols:
+            raise MathError("Only a square matrix can be raised to a power")
+        result = Matrix([[1 if i == j else 0 for j in range(self.cols)] for i in range(self.rows)])
+        for _ in range(power.numerator):
+            result = result.matmul(self)
+        return result

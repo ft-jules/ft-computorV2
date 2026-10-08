@@ -90,7 +90,7 @@ class Rational:
                 raise MathError("Exponent must be an integer (rational with denom 1)")
             power = power.numerator
         if not isinstance(power, int):
-            raise MathError("Exponent must be an interger")
+            raise MathError("Exponent must be an integer")
         if power < 0:
             return Rational(self.denominator, self.numerator) ** -power
         return Rational(self.numerator ** power, self.denominator ** power)
