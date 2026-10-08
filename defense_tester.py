@@ -211,6 +211,9 @@ class DefenseTester:
         self.check("a = 2 = 3", "", mode="error", description="Double affectation")
         self.check("2 +", "", mode="error", description="Operande manquant")
         self.check("h(x) = x + 1 )", "", mode="error", description="Corps de fonction mal forme")
+        self.check("varone1 = 3", "", mode="error", description="Chiffre dans un nom")
+        self.check("my_var = 3", "", mode="error", description="Underscore dans un nom")
+        self.check("i = 2", "", mode="error", description="i ne peut pas etre une variable")
 
         self.print_summary()
 

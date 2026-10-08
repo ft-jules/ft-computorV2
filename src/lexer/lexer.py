@@ -74,11 +74,13 @@ class Lexer:
             return Token(TokenType.NUMBER, float(result))
         return Token(TokenType.NUMBER, int(result))
 
-    def identifier(self):
+    def identifier(self): # the subject allows letters only in names
         result = ''
-        while self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
+        while self.current_char is not None and self.current_char.isascii() and self.current_char.isalpha():
             result += self.current_char
             self.advance()
+        if self.current_char is not None and (self.current_char.isalnum() or self.current_char == '_'):
+            raise ParseError(f"Invalid name '{result}{self.current_char}': names can only contain letters")
 
         lower_result = result.lower()
 
@@ -98,7 +100,7 @@ class Lexer:
             if self.current_char.isdigit() or self.current_char == '.':
                 return self.number()
 
-            if self.current_char.isalpha():
+            if self.current_char.isascii() and self.current_char.isalpha():
                 return self.identifier()
 
             if self.current_char == '*':

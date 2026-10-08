@@ -30,6 +30,14 @@ class Parser:
             raise ParseError(f"Expected end of input, got {self.current_token.type}")
 
     def parse(self):
+        # i is the imaginary unit, the lexer never makes it an ID, so catch it before the generic errors
+        if self.current_token.type == TokenType.IMAGINARY and self.lexer.peek_token(1).type == TokenType.ASSIGN:
+            raise ParseError("'i' is the imaginary unit, it cannot be used as a name")
+        if (self.current_token.type == TokenType.ID and
+            self.lexer.peek_token(1).type == TokenType.LPAREN and
+            self.lexer.peek_token(2).type == TokenType.IMAGINARY):
+            raise ParseError("'i' is the imaginary unit, it cannot be used as a name")
+
         #Assignation de variable
         if (self.current_token.type == TokenType.ID and self.lexer.peek_token(1).type == TokenType.ASSIGN):
             return self.assignment()
