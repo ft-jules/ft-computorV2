@@ -67,14 +67,25 @@ class Parser:
         self.eat(TokenType.ASSIGN)     # =
 
         body_tokens = []
-        while self.current_token.type != TokenType.EOF and self.current_token.type != TokenType.SEMICOLON:
+        while self.current_token.type != TokenType.EOF:
             body_tokens.append(self.current_token)
             self.eat(self.current_token.type)
-        self.expect_end()
 
+        self.check_body(param_name, body_tokens)
         func = Function(func_name, param_name, body_tokens)
         self.context.set_function(func_name, func)
         return func
+
+    def check_body(self, param_name, body_tokens): # syntax errors show up now, not at the first call
+        local_context = copy.deepcopy(self.context)
+        local_context.set_variable(param_name, Polynomial({1: Complex(1)}, var_name=param_name))
+        sub_parser = Parser(ListLexer(body_tokens), local_context, is_solving=True)
+        try:
+            sub_parser.expr()
+            sub_parser.expect_end()
+        except (MathError, TypeError):
+            # the parameter has no value yet, so only a ParseError means the body is wrong
+            pass
 
     def resolve_function_call(self, func_obj, arg_value):
         local_context = copy.deepcopy(self.context)

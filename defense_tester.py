@@ -133,10 +133,12 @@ class DefenseTester:
         
         # 4. FONCTIONS
         self.print_header("FONCTIONS")
-        self.check("f(x) = x ^ 2", "Function f(x)", description="Définition fonction")
+        self.check("f(x) = x ^ 2", "x^2", description="Définition fonction")
         self.check("f(4)", "16", description="Appel fonction simple")
-        self.check("g(y) = f(y) + 1", "Function g(y)", description="Fonction imbriquée")
+        self.check("g(y) = f(y) + 1", "f(y) + 1", description="Fonction imbriquée")
         self.check("g(3)", "10", description="Appel fonction imbriquée")
+        self.check("funA(x) = 2*x^5 + 4x^2 - 5*x + 4", "2 * x^5 + 4 * x^2 - 5 * x + 4", description="Affichage du corps (sujet)")
+        self.check("funB(y) = 43 * y / (4 % 2 * y)", "43 * y / (4 % 2 * y)", description="Corps accepte meme si division par zero")
 
         # 5. MATRICES (Nécessite le fix dans matrix.py)
         self.print_header("MATRICES")
@@ -202,6 +204,7 @@ class DefenseTester:
         self.check("2 3", "", mode="error", description="Deux nombres sans operateur")
         self.check("a = 2 = 3", "", mode="error", description="Double affectation")
         self.check("2 +", "", mode="error", description="Operande manquant")
+        self.check("h(x) = x + 1 )", "", mode="error", description="Corps de fonction mal forme")
 
         self.print_summary()
 
