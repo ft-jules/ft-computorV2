@@ -130,6 +130,8 @@ class DefenseTester:
         self.check("i", "i", description="Unité imaginaire")
         self.check("i^2", "-1", description="Carré de i")
         self.check("(1 + 2 * i) * (3 + 4 * i)", "-5 + 10i", description="Multiplication complexe")
+        self.check("(3 + 2i) * (1 - i)", "5 - i", description="Coefficient colle a i")
+        self.check("4i / 2i", "2", description="Produit implicite prioritaire sur /")
         
         # 4. FONCTIONS
         self.print_header("FONCTIONS")

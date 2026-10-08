@@ -170,9 +170,26 @@ class Parser:
 
         if self.current_token.type == TokenType.POW:
             self.eat(TokenType.POW)
-            # the exponent goes back through unary(): 2^3^2 is 2^(3^2), and 2^-1 works
-            node = node ** self.unary()
+            node = node ** self.exponent()
 
+        return node
+
+    # the exponent goes back through power(): 2^3^2 is 2^(3^2), and 2^-1 works
+    # it stops before implicit products, so 2^3x is (2^3) * x
+    def exponent(self):
+        if self.current_token.type == TokenType.MINUS:
+            self.eat(TokenType.MINUS)
+            return self.exponent() * Rational(-1)
+        if self.current_token.type == TokenType.PLUS:
+            self.eat(TokenType.PLUS)
+            return self.exponent()
+        return self.power()
+
+    # 2i, 4x, 2(x + 1): an implicit product binds tighter than / so that 4i / 2i is 2
+    def implicit(self):
+        node = self.power()
+        while self.current_token.type in (TokenType.ID, TokenType.LPAREN, TokenType.IMAGINARY):
+            node = node * self.power()
         return node
 
     # unary minus sits above ^ so that -2^2 is -(2^2)
@@ -183,20 +200,16 @@ class Parser:
         if self.current_token.type == TokenType.PLUS:
             self.eat(TokenType.PLUS)
             return self.unary()
-        return self.power()
+        return self.implicit()
 
     # NIVEAU 3 : Termes(*, /, %, **)
     def term(self):
         node = self.unary()
         valid_ops = (TokenType.MUL, TokenType.DIV, TokenType.MOD, TokenType.MAT_MUL)
-        implicit_muls = (TokenType.ID, TokenType.LPAREN)
 
-        while self.current_token.type in valid_ops or self.current_token.type in implicit_muls:
+        while self.current_token.type in valid_ops:
             token = self.current_token
-
-            if token.type in implicit_muls:
-                node = node * self.unary()
-            elif token.type == TokenType.MUL:
+            if token.type == TokenType.MUL:
                 self.eat(TokenType.MUL)
                 node = node * self.unary()
             elif token.type == TokenType.DIV:
