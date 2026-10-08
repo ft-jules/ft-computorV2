@@ -3,6 +3,7 @@ Transforme une chaîne de caractères (input) en une liste de Tokens.
 """
 
 from src.lexer.tokens import Token, TokenType
+from src.utils.errors import ParseError
 
 class Lexer:
     def __init__(self, text):
@@ -67,6 +68,8 @@ class Lexer:
             result += self.current_char
             self.advance()
 
+        if result == '.':
+            raise ParseError(f"Invalid number '.' at position {self.pos - 1}")
         if '.' in result:
             return Token(TokenType.NUMBER, float(result))
         return Token(TokenType.NUMBER, int(result))

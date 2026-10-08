@@ -11,6 +11,7 @@ from src.lexer.lexer import Lexer
 from src.parser.parser import Parser
 from src.core.context import Context
 import main
+from src.utils.errors import ComputorError
 
 # --- COULEURS ---
 class Colors:
@@ -83,7 +84,7 @@ class DefenseTester:
                         parser.parse()
                     result_str = "No Error"
                     success = False
-                except Exception as e:
+                except ComputorError as e:
                     result_str = f"Error: {str(e)}"
                     success = True
 
@@ -189,6 +190,8 @@ class DefenseTester:
         self.check("[[2,4];[6,8]] / 0", "", mode="error", description="Matrice divisee par zero")
         self.check("2 / [[2,4];[6,8]]", "", mode="error", description="Scalaire divise par une matrice")
         self.check("[[2,4];[6,8]] % 2", "", mode="error", description="Modulo sur une matrice")
+        self.check("2 @ 3", "", mode="error", description="Caractere invalide")
+        self.check("1 + .", "", mode="error", description="Point seul")
 
         self.print_summary()
 
