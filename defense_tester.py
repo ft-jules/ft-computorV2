@@ -201,6 +201,12 @@ class DefenseTester:
                    ["degree: 2", "0.707106781"],
                    mode="solve", description="Discriminant complexe")
 
+        # the subject defines x = 2 in V.2 before solving funA(x) = y ? in V.3
+        self.check("x = 2", "2", description="x deja defini")
+        self.check("x^2 + 2x + 1 = 0 ?",
+                   ["degree: 2", "-1"],
+                   mode="solve", description="Inconnue qui a deja une valeur")
+
         # 7. ERREURS
         self.print_header("GESTION D'ERREURS")
         self.check("1 / 0", "", mode="error", description="Division par zéro")

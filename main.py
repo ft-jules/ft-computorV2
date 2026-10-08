@@ -1,9 +1,5 @@
 """
 Point d'entrée du programme. Lance le shell interactif.
-dd
-BONUS:
-division par des fractions avec la sous couche de rationels Expression
-pas avec methode float sale car (2^1/2)^2 = 1.99999999
 """
 
 import sys
@@ -18,25 +14,40 @@ from src.core.complex import Complex
 from src.utils.errors import MathError, ParseError
 
 def find_unknown_variable(text, context):
+    # In "... = ... ?" the user asks to solve, so a name can be the unknown even if it already
+    # has a value: after x = 2 from the subject, funA(x) = y ? must still solve for x.
+    tokens = []
     lexer = Lexer(text)
     token = lexer.get_next_token()
-
-    unknowns = set()
-
     while token.type != TokenType.EOF:
-        if token.type == TokenType.ID:
-            var_name = token.value
-            if context.get_variable_safe(var_name) is None:
-                if context.get_function(var_name) is None:
-                    unknowns.add(var_name)
+        tokens.append(token)
         token = lexer.get_next_token()
-    
-    if len(unknowns) == 0:
-        return None
-    elif len(unknowns) == 1:
-        return unknowns.pop()
-    else:
-        raise MathError(f"Multiple unknowns found: {', '.join(unknowns)}. Can only solve univariate equations.")
+
+    names = []
+    call_args = []
+    for idx, tok in enumerate(tokens):
+        if tok.type != TokenType.ID:
+            continue
+        is_call = idx + 1 < len(tokens) and tokens[idx + 1].type == TokenType.LPAREN
+        if is_call and context.get_function(tok.value) is not None:
+            if idx + 3 < len(tokens) and tokens[idx + 2].type == TokenType.ID and tokens[idx + 3].type == TokenType.RPAREN:
+                call_args.append(tokens[idx + 2].value)
+            continue
+        if tok.value not in names:
+            names.append(tok.value)
+
+    undefined = [n for n in names if context.get_variable_safe(n) is None]
+    if len(undefined) == 1:
+        return undefined[0]
+    if len(undefined) > 1:
+        raise MathError(f"Multiple unknowns found: {', '.join(undefined)}. Can only solve univariate equations.")
+    # every name has a value: a single name is the unknown, else the argument of funA(x)
+    if len(names) == 1:
+        return names[0]
+    call_args = list(dict.fromkeys(call_args))
+    if len(call_args) == 1:
+        return call_args[0]
+    return None
 
 
 
