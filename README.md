@@ -21,11 +21,11 @@ python3 main.py
 > m = [[1,2];[3,4]]
 [[1, 2]; [3, 4]]
 > f(z) = z^2 + 3
-Function f(z)
+z^2 + 3
 > f(2) = ?
 7
-> x^2 + 5x = 10 ?
-Reduced form: x^2 + 5x - 10 = 0
+> t^2 + 5t = 10 ?
+Reduced form: t^2 + 5t - 10 = 0
 Polynomial degree: 2
 Discriminant (Delta): 65
 Discriminant is strictly positive, the two solutions are:
@@ -46,6 +46,9 @@ Interface graphique (bonus) : `python3 main.py --gui`.
 - affectation et réaffectation, le type est inféré
 - `?` en fin de ligne : évalue une expression (`x + y = ?`) ou résout une
   équation polynomiale jusqu'au degré 2
+- multiplication implicite : `2i`, `4x`, `2(x + 1)` forment un bloc, donc `4x / 2x`
+  vaut 2
+- `-2^2` vaut -4 et `2^3^2` vaut 512, comme en maths
 - division par une fraction passe par la couche rationnelle, pas par des floats,
   pour éviter les `(2^1/2)^2 = 1.9999999`
 
