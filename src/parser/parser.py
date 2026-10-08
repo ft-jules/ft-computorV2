@@ -2,15 +2,15 @@
 Analyse la liste de tokens et construit l'AST (Abstract Syntax Tree).
 """
 import copy
-from src.lexer.tokens import TokenType
+from src.lexer.tokens import Token, TokenType
 from src.lexer.list_lexer import ListLexer
-from src.utils.errors import ParseError, MathError
+from src.utils.errors import ParseError, MathError, ComputorError
 from src.core.rational import Rational
 from src.core.complex import Complex
 from src.core.matrix import Matrix
 from src.core.polynomial import Polynomial
 from src.core.context import Context
-from src.core.function import Function
+from src.core.function import Function, BINARY_OPS, SIGN_CONTEXT
 
 class Parser:
     def __init__(self, lexer, context=None, is_solving=False):
@@ -80,6 +80,7 @@ class Parser:
             self.eat(self.current_token.type)
 
         self.check_body(param_name, body_tokens)
+        body_tokens = self.simplify_body(param_name, body_tokens)
         func = Function(func_name, param_name, body_tokens)
         self.context.set_function(func_name, func)
         return func
@@ -94,6 +95,96 @@ class Parser:
         except (MathError, TypeError):
             # the parameter has no value yet, so only a ParseError means the body is wrong
             pass
+
+    # SIMPLIFICATION DU CORPS
+    # The subject wants funA(x) = varA + varB * 4 - 1 / 2 + x to print 238.5 + x:
+    # known variables take their value at definition, and the constant terms are added up.
+    # Terms that hold the parameter are kept as typed (2 * b + b stays 2 * b + b, like in V.4.3).
+
+    def split_terms(self, tokens): # cuts the body on top-level + and -, each term keeps its sign
+        terms = []
+        current = []
+        sign = 1
+        depth = 0
+        prev = None
+        for tok in tokens:
+            if tok.type in (TokenType.LPAREN, TokenType.LBRACKET):
+                depth += 1
+            elif tok.type in (TokenType.RPAREN, TokenType.RBRACKET):
+                depth -= 1
+            is_operator = (tok.type in (TokenType.PLUS, TokenType.MINUS) and depth == 0 and current
+                           and prev.type not in BINARY_OPS and prev.type not in SIGN_CONTEXT)
+            if is_operator:
+                terms.append((sign, current))
+                current = []
+                sign = 1 if tok.type == TokenType.PLUS else -1
+            else:
+                current.append(tok)
+            prev = tok
+        if current:
+            terms.append((sign, current))
+        return terms
+
+    def substitute_variables(self, param_name, tokens): # the parameter stays, known variables become their value
+        out = []
+        for idx, tok in enumerate(tokens):
+            is_call = idx + 1 < len(tokens) and tokens[idx + 1].type == TokenType.LPAREN
+            if tok.type == TokenType.ID and tok.value != param_name and not is_call:
+                value = self.context.get_variable_safe(tok.value)
+                if value is not None:
+                    out.append(Token(TokenType.NUMBER, value))
+                    continue
+            out.append(tok)
+        return out
+
+    def constant_value(self, tokens): # the Rational value of a term without names, None otherwise
+        if any(tok.type == TokenType.ID for tok in tokens):
+            return None
+        try:
+            sub_parser = Parser(ListLexer(tokens), self.context)
+            value = sub_parser.expr()
+            sub_parser.expect_end()
+        except ComputorError:
+            return None
+        if isinstance(value, Rational):
+            return value
+        return None
+
+    def simplify_body(self, param_name, body_tokens):
+        terms = []
+        for sign, toks in self.split_terms(body_tokens):
+            toks = self.substitute_variables(param_name, toks)
+            terms.append((sign, toks, self.constant_value(toks)))
+
+        total = Rational(0)
+        const_pos = None
+        kept = []
+        for sign, toks, value in terms:
+            if value is None:
+                kept.append((sign, toks))
+                continue
+            total = total + value * Rational(sign)
+            if const_pos is None:
+                const_pos = len(kept)
+        # the sum of the constants takes the place of the first one, as in 238.5 + x,
+        # except a negative sum in front, which goes last: (x + 2)^2 - 5 in the subject
+        if const_pos is not None and (total != Rational(0) or not kept):
+            const_sign = 1
+            if total.numerator < 0:
+                const_sign = -1
+                total = total * Rational(-1)
+                if const_pos == 0 and kept:
+                    const_pos = len(kept)
+            kept.insert(const_pos, (const_sign, [Token(TokenType.NUMBER, total)]))
+
+        out = []
+        for idx, (sign, toks) in enumerate(kept):
+            if idx > 0:
+                out.append(Token(TokenType.PLUS if sign == 1 else TokenType.MINUS))
+            elif sign == -1:
+                out.append(Token(TokenType.MINUS))
+            out.extend(toks)
+        return out
 
     def resolve_function_call(self, func_obj, arg_value):
         local_context = copy.deepcopy(self.context)
@@ -111,7 +202,10 @@ class Parser:
 
         if token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
-            return Rational(token.value)
+            # a simplified function body holds values directly, not only lexer numbers
+            if isinstance(token.value, (int, float)):
+                return Rational(token.value)
+            return token.value
         
         if token.type == TokenType.IMAGINARY:
             self.eat(TokenType.IMAGINARY)

@@ -26,6 +26,14 @@ PLAIN_TOKENS = {
     TokenType.SEMICOLON: "; ",
 }
 
+def format_value(value): # a value put back in a body must read as one block
+    if hasattr(value, "inline"):
+        return value.inline()
+    text = str(value)
+    if " " in text:
+        return f"({text})"
+    return text
+
 def format_body(tokens): # rebuilds the body as typed, with the subject's spacing
     out = ""
     prev = None
@@ -43,7 +51,9 @@ def format_body(tokens): # rebuilds the body as typed, with the subject's spacin
                 is_call = prev.type == TokenType.ID and t == TokenType.LPAREN
                 if t in (TokenType.ID, TokenType.IMAGINARY, TokenType.NUMBER, TokenType.LPAREN) and not is_call:
                     out += " * "
-            if t in (TokenType.NUMBER, TokenType.ID):
+            if t == TokenType.NUMBER:
+                out += format_value(tok.value)
+            elif t == TokenType.ID:
                 out += str(tok.value)
             else:
                 out += PLAIN_TOKENS.get(t, "")
