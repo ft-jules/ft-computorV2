@@ -150,6 +150,9 @@ def main():
         except KeyboardInterrupt:
             print("\nGoodbye!")
             sys.exit(0)
+        except EOFError: # Ctrl-D, without this the loop reads EOF forever
+            print("\nGoodbye!")
+            break
         except Exception as e:
             print(f"Error: {e}")
 

@@ -61,7 +61,7 @@ class Polynomial:
         else:
             return NotImplemented
 
-        res = Polynomial(new_coeffs)
+        res = Polynomial(new_coeffs, self.var_name)
         res._clean()
         return res
 
@@ -81,7 +81,7 @@ class Polynomial:
                 new_coeffs[deg] = res
         else:
             return NotImplemented
-        res = Polynomial(new_coeffs)
+        res = Polynomial(new_coeffs, self.var_name)
         res._clean()
         return res
 
@@ -106,7 +106,7 @@ class Polynomial:
                     new_coeffs[new_deg] = current + new_val
         else:
             return NotImplemented
-        res = Polynomial(new_coeffs)
+        res = Polynomial(new_coeffs, self.var_name)
         res._clean()
         return res
 
@@ -124,8 +124,8 @@ class Polynomial:
         if power < 0:
             raise MathError("Cannot raise polynomial to negative power")
         if power == 0:
-            return Polynomial({0: 1})
-        res = Polynomial({0: 1})
+            return Polynomial({0: 1}, self.var_name)
+        res = Polynomial({0: 1}, self.var_name)
         for _ in range(power):
             res = res * self
         return res
