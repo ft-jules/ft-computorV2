@@ -4,7 +4,7 @@ Analyse la liste de tokens et construit l'AST (Abstract Syntax Tree).
 import copy
 from src.lexer.tokens import TokenType
 from src.lexer.list_lexer import ListLexer
-from src.utils.errors import ParseError
+from src.utils.errors import ParseError, MathError
 from src.core.rational import Rational
 from src.core.complex import Complex
 from src.core.matrix import Matrix
@@ -182,7 +182,10 @@ class Parser:
                 node = node % self.power()
             elif token.type == TokenType.MAT_MUL:
                 self.eat(TokenType.MAT_MUL)
-                node = node * self.power()
+                right = self.power()
+                if not isinstance(node, Matrix):
+                    raise MathError("** needs two matrices, use * for a scalar")
+                node = node.matmul(right)
         return node
 
     # NIVEAU 4 : Expresssions (+, -)
