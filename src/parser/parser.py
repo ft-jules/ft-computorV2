@@ -25,6 +25,10 @@ class Parser:
         else:
             raise ParseError(f"Expected {token_type}, got {self.current_token.type}")
 
+    def expect_end(self): # leftover tokens mean the input was not fully understood
+        if self.current_token.type != TokenType.EOF:
+            raise ParseError(f"Expected end of input, got {self.current_token.type}")
+
     def parse(self):
         #Assignation de variable
         if (self.current_token.type == TokenType.ID and self.lexer.peek_token(1).type == TokenType.ASSIGN):
@@ -37,8 +41,10 @@ class Parser:
             self.lexer.peek_token(3).type == TokenType.RPAREN and
             self.lexer.peek_token(4).type == TokenType.ASSIGN):
             return self.definition()
-    
-        return self.expr()
+
+        node = self.expr()
+        self.expect_end()
+        return node
 
     #ACTIONS
 
@@ -47,6 +53,7 @@ class Parser:
         self.eat(TokenType.ID)
         self.eat(TokenType.ASSIGN)
         val = self.expr()
+        self.expect_end()
         self.context.set_variable(var_name, val)
         return val
 
@@ -63,6 +70,7 @@ class Parser:
         while self.current_token.type != TokenType.EOF and self.current_token.type != TokenType.SEMICOLON:
             body_tokens.append(self.current_token)
             self.eat(self.current_token.type)
+        self.expect_end()
 
         func = Function(func_name, param_name, body_tokens)
         self.context.set_function(func_name, func)
@@ -74,7 +82,9 @@ class Parser:
         
         list_lexer = ListLexer(func_obj.body_tokens)
         sub_parser = Parser(list_lexer, local_context)
-        return sub_parser.expr()
+        result = sub_parser.expr()
+        sub_parser.expect_end()
+        return result
 
     # NIVEAU 1 : Nombres, Parentheses
     def factor(self):

@@ -192,6 +192,9 @@ class DefenseTester:
         self.check("[[2,4];[6,8]] % 2", "", mode="error", description="Modulo sur une matrice")
         self.check("2 @ 3", "", mode="error", description="Caractere invalide")
         self.check("1 + .", "", mode="error", description="Point seul")
+        self.check("w = 2 + 3 ) )", "", mode="error", description="Tokens restants apres affectation")
+        self.check("2 3", "", mode="error", description="Deux nombres sans operateur")
+        self.check("a = 2 = 3", "", mode="error", description="Double affectation")
 
         self.print_summary()
 
