@@ -90,14 +90,6 @@ class Parser:
     def factor(self):
         token = self.current_token
 
-        if token.type == TokenType.MINUS:
-            self.eat(TokenType.MINUS)
-            return self.factor() * Rational(-1)
-        
-        elif token.type== TokenType.PLUS:
-            self.eat(TokenType.PLUS)
-            return self.factor()
-        
         if token.type == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
             return Rational(token.value)
@@ -135,6 +127,8 @@ class Parser:
                 
             raise ParseError(f"Unknown variable '{name}'")
 
+        raise ParseError(f"Unexpected {token.type}")
+
     # GESTION DES MATRICES
     def matrix(self):
         self.eat(TokenType.LBRACKET)
@@ -163,16 +157,26 @@ class Parser:
     def power(self):
         node = self.factor()
 
-        while self.current_token.type == TokenType.POW:
-            token = self.current_token
+        if self.current_token.type == TokenType.POW:
             self.eat(TokenType.POW)
-            node = node ** self.factor()
+            # the exponent goes back through unary(): 2^3^2 is 2^(3^2), and 2^-1 works
+            node = node ** self.unary()
 
         return node
 
+    # unary minus sits above ^ so that -2^2 is -(2^2)
+    def unary(self):
+        if self.current_token.type == TokenType.MINUS:
+            self.eat(TokenType.MINUS)
+            return self.unary() * Rational(-1)
+        if self.current_token.type == TokenType.PLUS:
+            self.eat(TokenType.PLUS)
+            return self.unary()
+        return self.power()
+
     # NIVEAU 3 : Termes(*, /, %, **)
     def term(self):
-        node = self.power()
+        node = self.unary()
         valid_ops = (TokenType.MUL, TokenType.DIV, TokenType.MOD, TokenType.MAT_MUL)
         implicit_muls = (TokenType.ID, TokenType.LPAREN)
 
@@ -180,19 +184,19 @@ class Parser:
             token = self.current_token
 
             if token.type in implicit_muls:
-                node = node * self.power()
+                node = node * self.unary()
             elif token.type == TokenType.MUL:
                 self.eat(TokenType.MUL)
-                node = node * self.power()
+                node = node * self.unary()
             elif token.type == TokenType.DIV:
                 self.eat(TokenType.DIV)
-                node = node / self.power()
+                node = node / self.unary()
             elif token.type == TokenType.MOD:
                 self.eat(TokenType.MOD)
-                node = node % self.power()
+                node = node % self.unary()
             elif token.type == TokenType.MAT_MUL:
                 self.eat(TokenType.MAT_MUL)
-                right = self.power()
+                right = self.unary()
                 if not isinstance(node, Matrix):
                     raise MathError("** needs two matrices, use * for a scalar")
                 node = node.matmul(right)

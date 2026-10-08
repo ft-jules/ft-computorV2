@@ -115,6 +115,8 @@ class DefenseTester:
         self.check("2 * 3 + 4", "10", description="Priorité multiplication")
         self.check("2 * (3 + 4)", "14", description="Parenthèses")
         self.check("5 % 2", "1", description="Modulo")
+        self.check("-2^2", "-4", description="Moins unaire apres la puissance")
+        self.check("2^3^2", "512", description="Puissance associative a droite")
 
         # 2. VARIABLES
         self.print_header("VARIABLES")
@@ -179,6 +181,10 @@ class DefenseTester:
                    ["degree: 1", "5"], 
                    mode="solve", description="Nettoyage coefficients")
 
+        self.check("-y^2 + 4 = 0 ?",
+                   ["degree: 2", "strictly positive", "2", "-2"],
+                   mode="solve", description="Moins unaire dans une equation")
+
         # 7. ERREURS
         self.print_header("GESTION D'ERREURS")
         self.check("1 / 0", "", mode="error", description="Division par zéro")
@@ -195,6 +201,7 @@ class DefenseTester:
         self.check("w = 2 + 3 ) )", "", mode="error", description="Tokens restants apres affectation")
         self.check("2 3", "", mode="error", description="Deux nombres sans operateur")
         self.check("a = 2 = 3", "", mode="error", description="Double affectation")
+        self.check("2 +", "", mode="error", description="Operande manquant")
 
         self.print_summary()
 
