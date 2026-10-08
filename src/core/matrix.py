@@ -25,11 +25,16 @@ class Matrix:
                 new_row.append(item)
             self.data.append(new_row)
 
-    def __repr__(self):
+    def __repr__(self): # one line per row, as in the subject: [ 1 , 2 ]
+        lines = []
+        for row in self.data:
+            lines.append("[ " + " , ".join(str(x) for x in row) + " ]")
+        return "\n".join(lines)
+
+    def inline(self): # input syntax, used to print a matrix inside a function body
         row_str = []
         for row in self.data:
-            row_content = [str(x) for x in row]
-            row_str.append(f"[{', '.join(row_content)}]")
+            row_str.append(f"[{', '.join(str(x) for x in row)}]")
         return f"[{'; '.join(row_str)}]"
 
     def __eq__(self, other):

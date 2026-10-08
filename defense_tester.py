@@ -115,6 +115,7 @@ class DefenseTester:
         self.check("2 * 3 + 4", "10", description="Priorité multiplication")
         self.check("2 * (3 + 4)", "14", description="Parenthèses")
         self.check("5 % 2", "1", description="Modulo")
+        self.check("2 *(2 + 4 * 36 -4 /3)", "289.333333333", description="Affichage decimal (sujet)")
         self.check("-2^2", "-4", description="Moins unaire apres la puissance")
         self.check("2^3^2", "512", description="Puissance associative a droite")
 
@@ -144,13 +145,13 @@ class DefenseTester:
 
         # 5. MATRICES (Nécessite le fix dans matrix.py)
         self.print_header("MATRICES")
-        self.check("[[1, 2]; [3, 4]]", "[[1, 2]; [3, 4]]", description="Parsing Matrice")
-        self.check("[[1, 2]] * 2", "[[2, 4]]", description="Multiplication Scalaire")
-        self.check("[[1, 2]] + [[3, 4]]", "[[4, 6]]", description="Addition Matrices")
-        self.check("[[1, 2]] ** [[3]; [4]]", "[[11]]", description="Produit Matriciel")
-        self.check("[[1, 2]; [3, 4]] * [[1, 2]; [3, 4]]", "[[1, 4]; [9, 16]]", description="Multiplication terme a terme")
-        self.check("[[1, 2]; [3, 4]] ** [[1, 2]; [3, 4]]", "[[7, 10]; [15, 22]]", description="Produit Matriciel carre")
-        self.check("[[2, 4]; [6, 8]] / 2", "[[1, 2]; [3, 4]]", description="Division par un scalaire")
+        self.check("[[1, 2]; [3, 4]]", "[ 1 , 2 ]\n[ 3 , 4 ]", description="Parsing Matrice")
+        self.check("[[1, 2]] * 2", "[ 2 , 4 ]", description="Multiplication Scalaire")
+        self.check("[[1, 2]] + [[3, 4]]", "[ 4 , 6 ]", description="Addition Matrices")
+        self.check("[[1, 2]] ** [[3]; [4]]", "[ 11 ]", description="Produit Matriciel")
+        self.check("[[1, 2]; [3, 4]] * [[1, 2]; [3, 4]]", "[ 1 , 4 ]\n[ 9 , 16 ]", description="Multiplication terme a terme")
+        self.check("[[1, 2]; [3, 4]] ** [[1, 2]; [3, 4]]", "[ 7 , 10 ]\n[ 15 , 22 ]", description="Produit Matriciel carre")
+        self.check("[[2, 4]; [6, 8]] / 2", "[ 1 , 2 ]\n[ 3 , 4 ]", description="Division par un scalaire")
 
         # 6. ÉQUATIONS (Adapté à ton output)
         self.print_header("RÉSOLUTION D'ÉQUATIONS")
@@ -190,7 +191,7 @@ class DefenseTester:
                    mode="solve", description="Moins unaire dans une equation")
 
         self.check("x^2 + i = 0 ?",
-                   ["degree: 2", "0.707107"],
+                   ["degree: 2", "0.707106781"],
                    mode="solve", description="Discriminant complexe")
 
         # 7. ERREURS

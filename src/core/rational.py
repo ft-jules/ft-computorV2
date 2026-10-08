@@ -34,15 +34,9 @@ class Rational:
     def __str__(self):
         if self.denominator == 1:
             return str(self.numerator)
-        d = self.denominator
-        while d % 2 == 0:
-            d //=2
-        while d % 5 == 0:
-            d//=5
-        if d == 1:
-            val = self.numerator / self.denominator
-            return f"{val:.6f}".rstrip('0').rstrip('.')
-        return f"{self.numerator}/{self.denominator}"
+        # the value stays an exact fraction, only the display is decimal, like the subject's 289.333333333
+        val = self.numerator / self.denominator
+        return f"{val:.9f}".rstrip('0').rstrip('.')
 
     def __repr__(self):
         return self.__str__()
